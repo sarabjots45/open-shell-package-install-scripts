@@ -39,12 +39,16 @@ if [ -x "$DOCKER_COMPOSE_PATH" ]; then
     log "Docker Compose is already installed. Skipping Docker Compose installation."
 else
     log "Installing the latest stable Docker Compose..."
-    # Get latest release version
     LATEST_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -Po '"tag_name": "\K[^"]+')
     
     sudo curl -L "https://github.com/docker/compose/releases/download/${LATEST_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o "$DOCKER_COMPOSE_PATH"
     sudo chmod +x "$DOCKER_COMPOSE_PATH"
 fi
+
+# Export /usr/local/bin to PATH for root user and source it
+log "Ensuring /usr/local/bin is in root's PATH..."
+echo 'export PATH=$PATH:/usr/local/bin' | sudo tee -a /root/.bashrc > /dev/null
+source /root/.bashrc
 
 # Print versions
 log "Docker version:"
